@@ -1,0 +1,6 @@
+opensearch-py
+sentence-transformers
+torch
+pandas
+faiss-cpu
+rank_bm25
