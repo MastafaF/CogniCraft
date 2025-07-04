@@ -26,10 +26,12 @@ The hybrid search functionality in this project combines the results from keywor
 
 The OpenSearch method first normalizes the scores from each search system to a common [0, 1] scale using **Min-Max Normalization**. This prevents one system's scoring scale from unfairly dominating the other.
 
+
 For each set of results (BM25 and Semantic), the scores are normalized:
-$$
+```math
 S_{\text{norm}} = \frac{S - S_{\text{min}}}{S_{\text{max}} - S_{\text{min}}}
-$$
+```
+
 
 Then, a **weighted linear combination** is applied to the normalized scores. For a given document `d` and query `q`, the combined score is:
 
@@ -38,8 +40,10 @@ S_{\text{combined}}(d, q) = (w_{\text{bm25}} \times S_{\text{norm,bm25}}) + (w_{
 $$
 
 Where:
--   `$S_{norm}$` is the normalized score for each respective system.
--   `$w_{bm25}$` and `$w_{semantic}$` are the weights you can assign to prioritize one search method over the other.
+- `$S_{\text{norm}}$` is the normalized score from each respective system (BM25 or semantic).
+- `$w_{\text{bm25}}$` and `$w_{\text{semantic}}$` are the weights assigned to prioritize one search method over the other.
+- The weights should sum to 1 (e.g., $w_{\text{bm25}} = 0.5$, $w_{\text{semantic}} = 0.5$ for equal weighting).
+- The final combined score determines the ranking of each document.
 
 ### 2. FAISS + BM25 Approach: Reciprocal Rank Fusion (RRF)
 
