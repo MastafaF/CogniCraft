@@ -34,12 +34,12 @@ $$
 Then, a **weighted linear combination** is applied to the normalized scores. For a given document `d` and query `q`, the combined score is:
 
 $$
-S_{\text{combined}}(d, q) = (w_{\text{bm25}} \times S_{\text{norm\_bm25}}) + (w_{\text{semantic}} \times S_{\text{norm\_semantic}})
+S_{\text{combined}}(d, q) = (w_{\text{bm25}} \times S_{\text{norm,bm25}}) + (w_{\text{semantic}} \times S_{\text{norm,semantic}})
 $$
 
 Where:
--   `S_norm` is the normalized score for each respective system.
--   `w_bm25` and `w_semantic` are the weights you can assign to prioritize one search method over the other.
+-   `$S_{norm}$` is the normalized score for each respective system.
+-   `$w_{bm25}$` and `$w_{semantic}$` are the weights you can assign to prioritize one search method over the other.
 
 ### 2. FAISS + BM25 Approach: Reciprocal Rank Fusion (RRF)
 
@@ -52,8 +52,8 @@ S_{\text{RRF}}(d) = \sum_{i \in \text{systems}} \frac{1}{k + \text{rank}_i(d)}
 $$
 
 Where:
--   `rank_i(d)` is the rank of document `d` in the results from system `i` (either BM25 or FAISS).
--   `k` is a constant (set to 60 in our script) used to reduce the impact of high ranks.
+-   `$\text{rank}_i(d)$` is the rank of document `d` in the results from system `i` (either BM25 or FAISS).
+-   `$k$` is a constant (set to 60 in our script) used to reduce the impact of high ranks.
 
 ### RRF vs. Weighted Approach: A Practical Example
 
@@ -109,5 +109,5 @@ For combining heterogeneous systems like keyword search and vector search, **RRF
     ```bash
     python cognicraft_rag.py
     ```
-5.  **View the results:**
-    The script will print the results from both approaches, allowing you to compare their effectiveness.            
+5.  **View results:**
+    The script will print the results of both hybrid search approaches, showing how they retrieve and rank documents based on the query.
