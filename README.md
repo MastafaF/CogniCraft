@@ -91,6 +91,43 @@ Score: 0.0328 | Text: The sky is blue and the sun is bright.
 
 For combining heterogeneous systems like keyword search and vector search, **RRF is often a more practical and robust choice** as it sidesteps the complex problem of score normalization.
 
+## Generation with Gemini
+Let's focus on the final step: generating an answer. We do this by sending a carefully crafted prompt to the Gemini LLM. We can similarly use OpenAI's GPT-4 or any other LLM that supports prompt engineering.
+
+Grounding the LLM: How to Root the Answer in Facts
+The biggest challenge with LLMs is preventing them from using their own internal knowledge and forcing them to answer only based on the documents we provide. This is called grounding. Our prompt engineering is designed to achieve this:
+
+prompt = f"""
+You are a translation assistant for a company like Apple. Your task is to help a translator by answering their question based *only* on the provided official documents.
+The user is asking a question about how to translate a concept. Provide a clear, concise answer and show the approved translation examples from the documents.
+
+**Translator's Question:**
+"{query}"
+
+**Official Documents:**
+{context}
+
+**Your Answer:**
+"""
+
+This prompt grounds the model in three ways:
+
+Persona: It tells the model to act as a "translation assistant."
+
+Strict Instruction: It explicitly commands the model to use information "only on the provided official documents."
+
+Data Injection: It provides the aggregated top_k documents as the sole source of truth.
+
+Production-Grade Grounding: How would a big techc company do it better?
+While our prompt is effective, a company like Microsoft or Apple would implement even more rigorous techniques for a production system:
+
+Answer Verification & Attribution: After Gemini generates an answer, a second, smaller model or a rule-based system could run a check. It would verify that every statement in the generated answer can be directly attributed to a specific sentence in the provided documents. The final UI could even show citations, linking parts of the answer back to the source document.
+
+Fine-Tuning: For maximum reliability, Apple would likely fine-tune a model (like Gemini) on tens of thousands of examples. Each example would consist of a (query, context, ideal_answer) triplet. This would train the model to become an expert specifically at the task of generating translation guidance from internal documents, further reducing the chance of hallucination.
+
+Note that there are different ways to implement grounding, and the above is just one example. The key is to ensure that the model's output is strictly based on the provided context, minimizing the risk of hallucination. There are various RAG mechanisms, e.g., RAG-token or RAG-sequence and other more advanced methods with an attention-based neural network that understands how to attend to documents close to the query for retrieval. This project focuses on a straightforward approach using prompt engineering to achieve grounding.
+
+
 ## How to Run
 
 1.  **Clone the repository:**
@@ -112,6 +149,13 @@ For combining heterogeneous systems like keyword search and vector search, **RRF
 4.  **Run the script:**
     ```bash
     python cognicraft_rag.py
+    ```
+    This will execute the hybrid search using both OpenSearch and the FAISS + BM25 approach, comparing their results.
+    Make sure you have the OpenSearch instance running before executing the script.
+    To run the full RAG experience with Gemini, you will need to set up the environment variables for your Gemini API key and run the script with the `--rag` flag:
+    ```bash
+    export GEMINI_API_KEY="your_gemini_api_key"
+    python industry_rag_gemini.py --rag
     ```
 5.  **View results:**
     The script will print the results of both hybrid search approaches, showing how they retrieve and rank documents based on the query.
