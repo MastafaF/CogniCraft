@@ -4,3 +4,5 @@ torch
 pandas
 faiss-cpu
 rank_bm25
+requests
+google-generativeai
